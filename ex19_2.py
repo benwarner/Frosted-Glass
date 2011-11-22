@@ -1,3 +1,5 @@
+"""
+"""
 from sys import argv
 script, p = argv
 p = int(p)
