@@ -16,6 +16,12 @@ shardwidth = 15
 shardheight = 15
 
 def crack(pane):
+    """
+    Cut the image into tiles, place tiles in order into list
+    
+    Same way that a cracked pane is still in place.
+    """
+
     crackedglass = []
     for j in range(ymargin, glassheight, shardheight):
         for i in range(xmargin, glasswidth, shardwidth):
@@ -34,6 +40,11 @@ def genperm(crackedglass):
     return perm
 
 def shatter(crackedglass, perm):
+    """
+    Permute ordered list of tiles into random sequence
+
+    The dustpan holds the random collection of tiles.
+    """
     dustpan = []
     for i in perm:
         dustpan.append(crackedglass[i])
@@ -41,7 +52,15 @@ def shatter(crackedglass, perm):
     return dustpan
 
 def glue(dustpan, perm):
-    """Reconstruct the image so it can be read."""
+    """
+    Reconstruct the image so it can be read.
+
+    dustpan - jumbled sequence of tiles
+    perm - list of indices to tiled list, in random order 
+        
+    e.g. perm[0] == 5 --> first element in dustpan is the 6th element in the
+    actual image
+    """
     # Rearrange the shards so that they can be glued in sequence.
     orderedtaggedshards = sorted(zip(perm, dustpan))
     orderedshards = []
