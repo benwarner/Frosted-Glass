@@ -1,0 +1,4 @@
+create a blank image, map white to every pixel, choose dimensions
+
+frost it: perform various transforms
+    gaussian noise -?-> errors about three dimensional weirdness
