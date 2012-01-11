@@ -90,13 +90,14 @@ def the_real_shatter(pane, key):
     # cracky is a list of images
     cracky = crack(pane)
     # frizzy is a permuted list of integers between 0 and number of tiles
-    frizzy = genperm(cracky)
+    frizzy = genperm(cracky, key)
     # dust is a scrambled list of images
     dust = shatter(cracky, frizzy)
     return dust
 
 
-def glue(dustpan, perm):
+# TODO clean up X and Y
+def glue(dustpan, perm, x=X, y=Y):
     """
     Reconstruct the image so it can be read.
 
@@ -112,7 +113,7 @@ def glue(dustpan, perm):
     for i in orderedtaggedshards:
         orderedshards.append(i[1]) # Is there an easier way to do this?
     
-    gluedpane = pane # Fix this later
+    gluedpane = Image.new('RGB', (x, y), color = (255, 255, 255))
     nextshard = 0
     for j in range(ymargin, glassheight, shardheight):
         for i in range(xmargin, glasswidth, shardwidth):

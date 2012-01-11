@@ -34,9 +34,9 @@ def frost(pane, frostyness = 2.6):
     data255 = convert_to_255(bindata)
     bwimg.putdata(data255)
 
-    bwimg.show()
+    # bwimg.show()
 
-    return bindata
+    return bwimg
 
 # results = process()
 
