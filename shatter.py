@@ -1,25 +1,70 @@
 import Image
 import random
+import ImageFont, ImageDraw
 
 # seed = sys.argv[1]
 seed = 9999
+X = 800
+Y = 600
 
-pane = Image.open("aoeuhtns.ppm")
-x, y = pane.size
+#messagefont = ImageFont.truetype("arial.ttf", 15)
+
+#pane = Image.open("aoeuhtns.ppm")
+#x, y = pane.size
 
 xmargin = 10
 ymargin = 10
-glasswidth = x - 2 * xmargin
-glassheight = y - 2 * ymargin
+glasswidth = X - 2 * xmargin
+glassheight = Y - 2 * ymargin
 
 shardwidth = 15
 shardheight = 15
 
+messagefile = "thesecret.txt"
+
+def readmessagefile(messagefile):
+    """
+    Takes in a text file and returns a string.
+    """
+    openfile = open(messagefile)
+    message = openfile.read()
+    
+    return message
+
+def setpanesize(message):
+    """
+    Sets pane (window) parameters to fit the given message.
+    """
+    
+    messagelength = len(message)
+    global X
+    X = 800 if messagelength > 10 else messagelength * 80
+    global Y 
+    Y = (messagelength//10)
+    #Initialize pane and glass dimensions
+    
+    
+def etch(message, font="FreeMonoBold.ttf", FontSize=20):
+    """
+    Convert the message into an image.
+    """
+    
+    pane = Image.new('RGB', (X, Y), color = (255, 255, 255))
+    font_dir = "/usr/share/fonts/truetype/freefont/"
+    #pane_name = "test.jpg"
+    font_size = FontSize
+    fnt = ImageFont.truetype(font_dir+font, font_size)
+    draw = ImageDraw.Draw(pane)
+    draw.text((10,10), message, font=fnt, fill = 0)
+    del draw
+    return pane
+    #pane.save(pane_name,"JPEG",quality=100)
+
 def crack(pane):
     """
-    Cut the image into tiles, place tiles in order into list
+    Cut the image into tiles, then place the tiles, in order, into a list
     
-    Same way that a cracked pane is still in place.
+    This is like how a cracked pane is still in place.
     """
 
     crackedglass = []
@@ -72,18 +117,19 @@ def glue(dustpan, perm):
     for j in range(ymargin, glassheight, shardheight):
         for i in range(xmargin, glasswidth, shardwidth):
             shardoutline = (i, j, i + shardwidth, j + shardheight)
-            gluedpane.paste(orderedshards[nextshard],shardoutline)
+            gluedpane.paste(orderedshards[nextshard], shardoutline)
             nextshard += 1 # Do this with an 'iterable' instead?
 
     return gluedpane
 
-pane.show()
-cracky = crack(pane)
-frizzy = genperm(cracky)
-dusty = shatter(cracky, frizzy)
-goodasnew = glue(dusty, frizzy)
-raw_input("> ")
-goodasnew.show()
-goodasnew = glue(dusty, range(len(cracky)))
-raw_input("> ")
-goodasnew.show()
+def dosomestuff():
+	pane.show()
+	cracky = crack(pane)
+	frizzy = genperm(cracky)
+	dusty = shatter(cracky, frizzy)
+	goodasnew = glue(dusty, frizzy)
+	raw_input("> ")
+	goodasnew.show()
+	goodasnew = glue(dusty, range(len(cracky)))
+	raw_input("> ")
+	goodasnew.show()
