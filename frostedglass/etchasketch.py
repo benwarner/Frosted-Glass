@@ -23,8 +23,7 @@ def main():
     msg = readmessagefile(message_file)
     etched_image = etch(msg)
     etched_image.show()
-    import pdb; pdb.set_trace()
-    frosted_image = frost(etched_image, frostyness=1.5)
+    frosted_image = frost(etched_image, frostyness=2.2)
     scrambled_list_of_images = the_real_shatter(frosted_image, key=testing_key)
     # gluing with the wrong key, for illustration purposes
     raw_input("The wrong way> ")
