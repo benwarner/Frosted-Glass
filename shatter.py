@@ -1,3 +1,24 @@
+"""
+Shatter is to permute the image
+
+
+Basic steps:
+    Create an image
+    Fuzz the image, to prevent computerized recognition
+    Permute or scramble the image
+
+    [Send to someone else]
+
+    Unpermute image, recognizable by human sight, but not by computer OCR
+
+    image_creation: snapshot
+    etch - write words onto the "glass" of the computer screen
+    frost - process words to prevent computer recognition
+    shatter_and_glue - scramble and unscramble image
+
+    etchasketch - the driver that uses the other pieces
+"""
+
 import Image
 import random
 import ImageFont, ImageDraw

@@ -18,6 +18,9 @@ def convert_to_255(data):
     return [255 if 0 < x else 0 for x in data]
 
 def frost(pane, frostyness = 2.6):
+    """
+    Xors image with random string, returns XORed version
+    """
 
     bwimg = pane.convert('1')
 
@@ -32,9 +35,7 @@ def frost(pane, frostyness = 2.6):
     data255 = convert_to_255(bindata)
     bwimg.putdata(data255)
 
-    bwimg.show()
-
-    return bindata
+    return bwimg
 
 # results = process()
 
