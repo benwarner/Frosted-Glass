@@ -1,4 +1,6 @@
-create a blank image, map white to every pixel, choose dimensions
+On etch method:
+    read image file, 
+    wrap the text to [sensible] image size
 
-frost it: perform various transforms
-    gaussian noise -?-> errors about three dimensional weirdness
+clean up hardcoded parameters
+    e.g. dynamically determine image size 
