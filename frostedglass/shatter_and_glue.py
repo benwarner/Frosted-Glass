@@ -9,7 +9,7 @@ def show_breaks(pane, params):
     Show red lines corresponding to where the message will be broken into tiles.
     """
 
-    brokenpane = pane
+    brokenpane = pane.convert('RGB')
     xmargin = params["xmargin"]
     ymargin = params["ymargin"]
     glasswidth = brokenpane.getbbox()[2] - (2 * xmargin)
