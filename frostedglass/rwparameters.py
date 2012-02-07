@@ -41,7 +41,7 @@ def writeparameters(pane, params):
     (x, y) = (0, 0)
     for var in binparams:
         for pixie in var:
-            value = (0, 0, 0) if pixie == '0' else (255, 255, 255)
+            value = 0 if pixie == '0' else 255
             pane.putpixel((x, y), value)
             x += 1
         x = 0 # Start at the beginning of the next line.
