@@ -1,10 +1,14 @@
-def test(objlist):
+def test(objlist, sofar = None, permlist = None):
+    If permlist is None
+        permlist = []
+    If sofar is None
+        sofar = []
+
     n = len(objlist)
-    permlist = []
     if n > 1:
         for i in (range(n)):
-            first = objlist.pop(i)
-            perm = first.extend(test(objlist)
+#            first = objlist.pop(i)
+            perm = first.extend(test(objlist, sofar, permlist))
             permlist.append(perm)
     else:
         return objlist

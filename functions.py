@@ -1,36 +1,33 @@
 class shard(object):
     """shards are rectangular chunks of pixels that are rearranged into scrambled or unscrambled images."""
    
-    def __init__(self, row = 0, col = 0):
-        """shard position"""
+    def __init__(self, row = 0, col = 0, height = 10, width = 10):
+        """shard position and dimensions"""
         
         self.row = row
         self.col = col
-
-    def __dimensions__(self, height = 10, width = 10):
-        """The number of pixels tall and wide of the shard."""
-        
         self.height = height
         self.width = width
-
+        
     def get_pixels(stuff): #I'm still not sure how to do this. It needs to use the information about its row, column, height, and width.
         """Makes a serialized copy of the pixels that fall within the area of the shard (a tuple?)."""
 
 
-
-
-
 class glass(object):
-    """The glass is the portion of the image that contains the message and rearranged."""
+    """The glass is the portion of the image that contains the message to be rearranged."""
 
     def __init__(self, glassheight = 200, glasswidth = 100):
         """The message area. Will need to be adjusted in order to fit the message."""
+        
+        self.glassheight = glassheight
+        self.glasswidth = glasswidth
     
     def write_message(message_file, font = courier, font_size = 10, vertical_pad = 4, horizontal_pad = 4):
         """Reads in a text file and writes it into the message area."""
 
         for line in open(message_file, encoding = "utf8"):
             for letter in line:
+				
                 # Write the letter! It needs to be written in a little box which is the height and width of a normal letter plus the vertical and horizontal pad. It will be offset from it's normal position by a random number between 0 and the pad. (Be sure to use secure random number generation.)
 
     def etch(shardheight = 10, shardwidth = 10):
