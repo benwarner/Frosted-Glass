@@ -12,11 +12,31 @@ def show_breaks(pane, params):
     brokenpane = pane.convert('RGB')
     xmargin = params["xmargin"]
     ymargin = params["ymargin"]
+    shardswide = params["shardswide"]
+    shardstall = params["shardstall"]
     glasswidth = brokenpane.getbbox()[2] - (2 * xmargin)
     glassheight = brokenpane.getbbox()[3] - (2 * ymargin)
     shardwidth = glasswidth // params["shardswide"]
     shardheight = glassheight // params["shardstall"]
     
+    # bbox is the bounding tuple of the image (left, top, right, bottom)
+    bbox = brokenpane.getbbox()
+
+    glass_left = xmargin
+    glass_top = ymargin
+    glass_right = bbox[2] - xmargin
+    glass_bottom = bbox[3] - ymargin
+
+    while (glass_right - glass_left) % shardswide != 0:
+        glass_right += 1
+    while (glass_bottom - glass_top) % shardstall != 0:
+        glass_bottom += 1
+    shardwidth = (glass_right - glass_left)//shardswide
+    shardheight = (glass_bottom - glass_top)//shardstall
+    glasswidth = glass_right - glass_left
+    glassheight = glass_bottom - glass_top
+
+   
     vlines = [shardwidth * x + xmargin 
               for x in range(params["shardswide"] + 1)] # The x-coordinates
     hlines = [shardheight * y + ymargin 
@@ -29,7 +49,7 @@ def show_breaks(pane, params):
         draw.line(((x, ymargin), (x, ymargin + glassheight)), fill=(255, 0, 0))
 
     brokenpane.show()
-
+    return brokenpane
 
 def break_glass(pane, params):
     """
@@ -90,19 +110,16 @@ def glue(dustpan, params):
     xmargin = params['xmargin']
     ymargin = params['ymargin']
     
-    shard_dimensions = dustpan[0].getbbox()
-    shardwidth = shard_dimensions[2]  # i.e. the right edge of the first element of dustpan
-    shardheight = shard_dimensions[3]
+    shardwidth = dustpan[0].getbbox()[2] # i.e. the right edge of the first element of dustpan
+    shardheight = dustpan[0].getbbox()[3]
 
     # Get the correct dimensions in order to reassemble the image
     glasswidth = shardwidth*shardswide
-    # glassheight = shardheight*((len(dustpan)//shardsperline + 1) if len(dustpan) % shardsperline != 0 else len(dustpan)//shardsperline)
     glassheight = shardheight*shardstall
 
     panewidth = glasswidth + 2*xmargin
     paneheight = glassheight + 2*ymargin
-    # gbbox = glass.getbbox()
-    print('length of dustpan %d\nglasswidth %d\n glassheight %d\nshardbbox %s') % (len(dustpan), glasswidth, glassheight, shard_dimensions)
+    # print('length of dustpan %d\nglasswidth %d\n glassheight %d\nshardbbox %s') % (len(dustpan), glasswidth, glassheight, shard_dimensions)
 
     # Create the backdrop against which all the tiles will be pasted
     gluedpane = Image.new('RGB', (panewidth, paneheight), color=(255, 255, 255))
