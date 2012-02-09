@@ -22,13 +22,11 @@ def show_breaks(pane, params):
     hlines = [shardheight * y + ymargin 
               for y in range(params["shardstall"] + 1)] # The y-coordinates
 
-    #print(vlines, hlines)
     draw = ImageDraw.Draw(brokenpane)
-    # TODO fix this so the lines show up in red.
     for y in hlines:
-        draw.line(((xmargin, y), (xmargin + glasswidth, y)), fill='rgb(255,0,0)')
+        draw.line(((xmargin, y), (xmargin + glasswidth, y)), fill=(255, 0, 0))
     for x in vlines:
-        draw.line(((x, ymargin), (x, ymargin + glassheight)), fill='rgb(255,0,0)')
+        draw.line(((x, ymargin), (x, ymargin + glassheight)), fill=(255, 0, 0))
 
     brokenpane.show()
 

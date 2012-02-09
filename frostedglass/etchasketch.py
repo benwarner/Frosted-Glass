@@ -5,9 +5,8 @@ This is the file you want to use to get anything practical done.
 """
 
 from rwparameters import makeparameters
-from etch import etch, showbreaks
+from etch import etch, show_breaks
 from frost import frost
-from shatter_and_glue import shatter, restore
 
 def readmessagefile(messagefile):
     """
