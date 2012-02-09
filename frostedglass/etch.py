@@ -56,7 +56,7 @@ def crop_to_text(glass):
         pass
     
     # Make the new box by which to crop.
-    cropbox = (newleft, newtop, newright, newbottom)
+    cropbox = (newleft, newtop, newright+2, newbottom)
     glass = glass.crop(cropbox)
 
     return glass
@@ -140,12 +140,13 @@ def etch(message, img_format=None,
             yoff = 0
         draw.text((ulcorner[0]+xoff, ulcorner[1]+yoff), letter.next(), font=fnt, fill=0)
     
-    # Fill up the remainder of the space on the bottom.
-    pane = fill_remaining(pane, message, boxwidth, boxheight,
-                          randxoffset, randyoffset, font_size, xmargin, ymargin,
-                          widthremaining=glasswidth-(box_list[-1][0]+boxwidth),
-                          x=box_list[-1][0]+boxwidth,
-                          y=box_list[-1][1])
+    if top != ymargin:
+        # Fill up the remainder of the space on the bottom.
+        pane = fill_remaining(pane, message, boxwidth, boxheight,
+                              randxoffset, randyoffset, font_size, xmargin, ymargin,
+                              widthremaining=glasswidth-(box_list[-1][0]+boxwidth),
+                              x=box_list[-1][0]+boxwidth,
+                              y=box_list[-1][1])
 
     glass = crop_to_text(pane)
     glasswidth = glass.getbbox()[2]
