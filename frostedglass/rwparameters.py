@@ -38,6 +38,7 @@ def writeparameters(pane, params):
             zeros += '0'
         binparams[i] = zeros + binparams[i]
 
+    pane = pane.convert(1)
     (x, y) = (0, 0)
     for var in binparams:
         for pixie in var:
@@ -46,21 +47,6 @@ def writeparameters(pane, params):
             x += 1
         x = 0 # Start at the beginning of the next line.
         y += 1
-                
-#    # Turn the image into binary data
-#    panedata = pane.getdata()
-#    bindata = frost.convert_to_01(panedata)
-#
-#    bindata[0] = sw
-#    bindata[8] = st
-#    bindata[24] = xm
-#    bindata[32] = ym
-#    bindata[40] = fr
-#
-#    # Turn the binary data back into an image
-#    data255 = frost.convert_to_255(bindata)
-#    pane.putdata(data255)
-
 
 def readparameters(pane):
     """
@@ -70,6 +56,7 @@ def readparameters(pane):
     xmargin, ymargin, and frostyness
     """
     
+    pane = pane.convert(1)
     bindigits = 8 # The number of binary digits encoding each prameter.
     params = {}
     y = 0
@@ -78,7 +65,7 @@ def readparameters(pane):
         # This is a really annoying way to do this but I know no other way.
         binstr = ''
         for x in range(bindigits):
-            bin_number = 0 if pane.getpixel((x, y)) == (0, 0, 0) else 1
+            bin_number = 0 if pane.getpixel((x, y)) == 0 else 1
             binstr += str(bin_number)
         params[param] = int(binstr, 2)
         y += 1
