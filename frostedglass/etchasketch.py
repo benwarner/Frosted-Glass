@@ -8,6 +8,7 @@ from rwparameters import *
 from etch import *
 from shatter_and_glue import *
 from frost import *
+from scramble import *
 
 def readmessagefile(messagefile):
     """
