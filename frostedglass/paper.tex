@@ -1,0 +1,110 @@
+\documentclass[12pt]{article}
+%\usepackage{grapicx}
+\usepackage{subfig}
+\usepackage{float}
+\floatstyle{boxed}
+\restylefigure{float}
+
+\begin{document}
+\begin{center}p-CAPTCHAs and the Recognition Problem\end{center}
+
+
+% Resistance to brute force key searching by use of CAPTCHAs:
+% The idea—encrypt a CAPTCHA--2 pages (make this very clear, remember that it took awhile for Rob to grasp)
+% Cite the other guys' paper early on. State that this is a different implementation of the idea.
+% Value added: a different CAPTCHA, easier to implement. (Much more extensive discussion of the recognition problem)
+% applications—resistance to a really fast computer, passwords-1 page
+% ways that a person might attack the CAPTCHA—2 pages
+	% scoring function
+	% letter position minimization problem
+	% puzzle pieces attack
+	% human identifies parts of letters
+% fortifications against an attack—2 pages
+	% tweaking the parameters (window of readability)
+	% letter offsetting
+	% adding spurious connections/fake letters
+% results of people trying to break it
+% 
+% A p-CAPTCHA scheme must have a CAPTCHA (so the computer cannot read the original), and a recognition problem.
+% You must not allow the user to meaningfully recognize pieces of the original (because she could tell the computer what the pieces are and then the computer could solve a math problem)
+
+\begin{abstract}
+Awsome information about how cool this article is.
+\end{abstract}
+
+\section*{Introduction}
+	Modern cryptosystems combine a publicly available algorithm with one or more secret keys in order to encrypt a secret message so that only possessors of the decryption key are able to reverse the process and read the message. Because the algorithm is publicly available, the security of the cryptosystem depends on the difficulty of not being able to run the encryption process in reverse to turn the ciphertext (encrypted text) back into plaintext (decrypted text) without possession of the decryption key. Cryptosystems such as AES make the ciphertext apparently random, so that analyzing statistical properties of the ciphertext do not reveal enough information to obtain the plaintext without possessing the decryption key. (In AES, encryption and decryption are performed using the same key, but we are assuming an attacker does not possess it.)
+
+	One well known way of attacking a cryptosystem is to employ a brute force attack, that is, to use a computer to systematically try every key in the decryption key space (set of possible decryption keys). This is known as the brute-force attack. In order to make the brute-force attack infeasible, cryptosystems such as AES use large key spaces (such as 128-bit keys) so that there will be too many potential keys to search through in any reasonable amount of time. However, the brute-force attack may succeed if an attacker has access to greater computing resources. Advances in hardware technology allowed the Digital Encryption Standard (DES) to be broken in the late 1990s by means of a brute-force attack. (AES, the successor to DES, uses a much larger key space.)
+
+	Another possible scenario in which a brute-force attack would be possible is when the users of a cryptosystem cannot use a large key space or choose not to use all of a potential key space because it is inconvenient to do so. An example of this occurs when someone encrypts a file using a password as a key, but because of the difficulty of remembering a long password, the user chooses one which is a dictionary word or is too short. This allows a computer to systematically work through the set of all such weak passwords until it finds the one that appropriately decrypts the file. In this case, the decryption key space is too small.
+
+\section*{Resisting a Brute-Force Attack}
+	In order to carry out a brute-force attack, a computer must solve a Recognition Problem, that is, as each candidate key is tested, the computer must differentiate whether the corresponding \emph{possibly} decrypted file is in fact a correctly decrypted file or useless information obtained from a wrong decryption key.
+%	Describe some ways that present recognition oracles work with file formats.
+
+	Laptyeva et al present a technique to resist a brute-force attack even when the decryption key space is small. Their approach is to focus on strengthening the difficulty of the recognition problem through the use of a Completely Automated Public Turing test to tell Computers and Humans Apart (CAPTCHA). In Laptyeva et al's scheme, the encryption key (EK) (which is also used as the decryption key) is the sum of a short password (SP) that the user memorizes, and a strong key (SK) that the computer provides. (EK = SP + SK.) SK is text in the form of a hard to recognize CAPTCHA-ized image, which they call a p-CAPTCHA. The image of SK is not stored on the computer, but rather a transformed version of it. In order to obtain the image of SK, the user types in SP which the computer uses to run the transformation process in reverse to obtain the image of SK. At this point, the computer shows the image of SK to a human who then types it in.
+
+	An attacker might be able to obtain the file which has the transformed image of SK and attempt a brute-force attack by applying all short passwords to the transformed SK until finding the correct one. This approach will not work, however, because reversing a transformation with the wrong SP will produce an image similar to the correct image of SK. Thus, even though the computer may be able to work through all of SP's small key space, it runs into a Recognition Problem. It cannot decide which of the possible images of SK is the correct one. In this way, the original user gains the benefits of a strong password while only needing to memorize a short password.
+
+	 Laptyeva et al spend much of their paper describing the transformation process on SK, but devote very little space explaining why the computer will have difficulty differentiating a true image of SK, as produced by the correct SP, from a spurious one obtained from the wrong SP. The strength of the system depends on the difficulty of solving this Recognition Problem. The remainder of this paper will be devoted to a discussion of metrics related to solving a Recognition Problem, and the presentation of another p-CAPTCHA scheme.
+
+\section*{Attacking a p-CAPTCHA Scheme}
+	The objective of a p-CAPTCHA “cryptanalysis” is to identify a small subset of potentially correct candidate images to show to a human user. One way to do this would be to have a function that takes in every image and creates a score based on how likely it is that the image being viewed is the true image (the plaintext). With each candidate image having a score, the candidatescan be sorted and then the computer can either try to read the CAPTCHA directly and enter the password, or the images can be shown to a human user in order of  most likely (according to the computer's judgement) to be the plaintext.
+
+    This introduces a metric on how quickly a true image can be found.
+%Describe the metric.
+
+\section*{Fuzzy Letter Tiles}
+
+Blah, blah, blah, CAPTCHAs are sometimes broken (give some examples) so it is worthwhile to have ideas of different approaches. Similarly, it is valuable to learn about more possible ways of creating p-CAPTCHAs in case one of them is broken.
+
+	Another p-CAPTCHA encryption method involves rearranging tiles of hard to recognize “fuzzy” letters. An example of this method is given in figure 1. First, a strong key (SK) is written as an image with randomly offset letters. Second, random pixels are XORed between black and white to remove the presence of well-defined edges. Third, the image is partitioned into tiles. Fourth, the tiles are rearranged according to a permutation identified by the short password (SP).
+
+\begin{figure}
+	\centering	
+	\subfloat{\label{fig:plainSK}\includegraphics[width=.25]{plainSK.bmp}}
+	\subfloat{\label{fig:frostySK}\includegraphics[width=.25]{frostySK.bmp}}
+	\subfloat{\label{fig:SKbreaklines}\includegraphics[width=.25]{SKbreaklines.bmp}}
+	\subfloat{\label{fig:SK435239}\includegraphics[width=.25]{SK435239.bmp}}
+	\caption{The encryption process: 1. The strong key 2. Adding noise to hide edges 3. Dividing the image into tiles 4. Permuting the tiles according to a short password}
+	\label{fig:EncryptionProcess}
+\end{figure}
+
+	Noise was added to the image in step two in order to increase the difficulty of finding edges. When a letter is cut into pieces and those pieces are shifted around, the total amount of letter edge length will likely increase. If edges were easily discernible, the plaintext would be recognizable because it would have less total edge length. Decryption simply requires finding the inverse of the permutation corresponding to SP and rearranging the blocks into their original, human-readable form.
+
+	The image above was encrypted by permuting 48 blocks. Although there are 48-factorial permutations of 48 blocks, most of these permutations are irrelevant. Each permutation must be tied to a decryption key in order for it to be found by the user. Since we are assuming that the decryption algorithm is known, an attacker will only have to deal with as many candidate images as the decryption algorithm will produce from the small decryption key space.
+
+	Successfully attacking the p-CAPTCHA scheme presented here requires differentiating the true plaintext from the $n_{sp}$ candidate plaintexts. Three spurious plaintexts along with the true plaintext are shown in figure two.
+
+\begin{figure}
+	\centering	
+	\subfloat{\label{fig:SK435240}\includegraphics[width=.25]{SK435240.bmp}}
+	\subfloat{\label{fig:SK435241}\includegraphics[width=.25]{SK435241.bmp}}
+	\subfloat{\label{fig:SK435242}\includegraphics[width=.25]{SK435242.bmp}}
+	\subfloat{\label{fig:SK435243}\includegraphics[width=.25]{SK435243.bmp}}
+	\caption{Can your computer recognize the true plaintext?}
+	\label{fig:RecognitionProblem}
+\end{figure}
+
+
+
+
+Advantage: easy to try different configurations of fonts, text size, fuzziness, tile sizes, etc.
+My system is easy to understand and implement.
+
+\section*{Stuff}
+(I want to include some these things in my paper, but I still don't know where I will fit them in.)
+
+Window of readibility--In order for a p-CAPTCHA scheme to be successful, the plaintext must be sufficiently a sufficiently strong CAPTCHA that a human can read it but a computer cannot. In the fuzzy letter tiles CAPTCHA,  The boundary between readable and unreadable plaintext may not be a 
+
+If the computer cannot solve the recognition problem but can read still read the CAPTCHA plaintext (obtaining spurious strong keys from false candidate images) then it will nevertheless have SK which puts it a lot closer to obtaining EK.
+
+Don't turn your OCR problem into a simple math problem.
+
+If the computer can identify part but not all of the plaintext from a spurious image, then it may provide enough information to reduce the size of the strong key space so that the computer can mount a brute-force attack directly on the strong key. 
+
+A good CAPTCHA is not enough. A p-CAPTCHA scheme must contain both a CAPTCHA and a recognition problem.
+
+The image orientation CORTCHA thing won't work.
+\end{document}
