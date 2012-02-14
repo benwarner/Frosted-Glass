@@ -4,9 +4,10 @@ Do all the etching, frosting, shattering, glueing, and everything else.
 This is the file you want to use to get anything practical done.
 """
 
-from rwparameters import makeparameters
-from etch import etch, show_breaks
-from frost import frost
+from rwparameters import *
+from etch import *
+from shatter_and_glue import *
+from frost import *
 
 def readmessagefile(messagefile):
     """
@@ -28,7 +29,7 @@ def shatter(pane, key, params=None):
     """
     
     if not params:
-        params = rwparameters.makeparameters()
+        params = makeparameters()
 
     # shards is a list of images
     shards = break_glass(pane, params)
@@ -40,7 +41,7 @@ def shatter(pane, key, params=None):
     # back into a single image.
     uh_oh = glue(dustpan, params)
     
-    rwparameters.writeparameters(uh_oh, params)
+    writeparameters(uh_oh, params)
 
     return uh_oh
 
@@ -52,7 +53,7 @@ def restore(pane, key):
     Much like shatter but using the unscramble rather than scramble method
     """
     
-    params = rwparameters.readparameters(pane)
+    params = readparameters(pane)
     shards = break_glass(pane, params)
     mosaic = unscramble(shards, key)
     good_as_new = glue(mosaic, params)
