@@ -38,7 +38,7 @@ def writeparameters(pane, params):
             zeros += '0'
         binparams[i] = zeros + binparams[i]
 
-    pane = pane.convert(1)
+    pane = pane.convert('1')
     (x, y) = (0, 0)
     for var in binparams:
         for pixie in var:
@@ -56,7 +56,7 @@ def readparameters(pane):
     xmargin, ymargin, and frostyness
     """
     
-    pane = pane.convert(1)
+    pane = pane.convert('1')
     bindigits = 8 # The number of binary digits encoding each prameter.
     params = {}
     y = 0

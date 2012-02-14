@@ -12,25 +12,25 @@ def crop_to_text(glass):
     """
     Reduce the left, top, bottom, and right until you bump into black text.
     """
-
-    (left, top, right, bottom) = glass.getbbox()
     
+    (left, top, right, bottom) = glass.getbbox()
+
     # Find the left border. 
     try:
         for j in range(right):
             for i in range(bottom):
-                if glass.getpixel((j, i)) == (0, 0, 0):
-                    newleft = j
+                if glass.getpixel((j, i)) != (255, 255, 255):
+                    newleft = j - 1
                     raise StopIteration()
     except StopIteration:
         pass
-    
+
     # Find the top border.
     try:
         for j in range(bottom):
             for i in range(right):
-                if glass.getpixel((i, j)) == (0, 0, 0):
-                    newtop = j
+                if glass.getpixel((i, j)) != (255, 255, 255):
+                    newtop = j - 1
                     raise StopIteration()
     except StopIteration:
         pass
@@ -39,8 +39,8 @@ def crop_to_text(glass):
     try:
         for j in range(right)[::-1]:
             for i in range(bottom):
-                if glass.getpixel((j, i)) == (0, 0, 0):
-                    newright = j
+                if glass.getpixel((j, i)) != (255, 255, 255):
+                    newright = j + 1
                     raise StopIteration()
     except StopIteration:
         pass
@@ -49,14 +49,14 @@ def crop_to_text(glass):
     try:
         for j in range(bottom)[::-1]:
             for i in range(right):
-                if glass.getpixel((i, j)) == (0, 0, 0):
-                    newbottom = j
+                if glass.getpixel((i, j)) != (255, 255, 255):
+                    newbottom = j + 1
                     raise StopIteration()
     except StopIteration:
         pass
     
     # Make the new box by which to crop.
-    cropbox = (newleft, newtop, newright+2, newbottom)
+    cropbox = (newleft, newtop, newright, newbottom)
     glass = glass.crop(cropbox)
 
     return glass
@@ -155,3 +155,21 @@ def etch(message, img_format=None,
     pane.paste(glass, (xmargin, ymargin))
 
     return pane
+
+def recenter_warped(pane, params):
+    """
+    Center an image of text from an external program in a pane with given margins.
+    
+    Requires black text on a white background.
+    """
+
+    xmargin, ymargin = params['xmargin'], params['ymargin']
+
+    glass = crop_to_text(pane)
+    glasswidth = glass.getbbox()[2]
+    glassheight = glass.getbbox()[3]
+    pane = Image.new('RGB', (glasswidth + 2*xmargin, glassheight + 2*ymargin), color=(255, 255, 255))
+    pane.paste(glass, (xmargin, ymargin))
+
+    return pane
+
