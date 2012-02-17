@@ -1,34 +1,10 @@
 \documentclass[12pt]{article}
 \usepackage{graphicx}
-%\usepackage{subfig}
-%\usepackage{float}
-%\floatstyle{boxed}
-%\restylefigure{float}
 
 \begin{document}
 \title{p-CAPTCHAs and the Recognition Problem}
 \author{Ben Warner}
 \maketitle
-
-
-% Resistance to brute force key searching by use of CAPTCHAs:
-% The idea—encrypt a CAPTCHA--2 pages (make this very clear, remember that it took awhile for Rob to grasp)
-% Cite the other guys' paper early on. State that this is a different implementation of the idea.
-% Value added: a different CAPTCHA, easier to implement. (Much more extensive discussion of the recognition problem)
-% applications—resistance to a really fast computer, passwords-1 page
-% ways that a person might attack the CAPTCHA—2 pages
-	% scoring function
-	% letter position minimization problem
-	% puzzle pieces attack
-	% human identifies parts of letters
-% fortifications against an attack—2 pages
-	% tweaking the parameters (window of readability)
-	% letter offsetting
-	% adding spurious connections/fake letters
-% results of people trying to break it
-% 
-% A p-CAPTCHA system must have a CAPTCHA (so the computer cannot read the original), and a recognition problem.
-% You must not allow the user to meaningfully recognize pieces of the original (because she could tell the computer what the pieces are and then the computer could solve a math problem)
 
 \begin{abstract}
 In the paper, The Weak-password problem: Chaos, criticality, and encrypted p-CAPTCHAs, T. V. Laptyeva, S. Flach, and K. Kladko present a technique that greatly fortifies a weak password against a brute-force attack. In this paper, I present a metric for measuring the security of this technique as well as present another implementation of it.
@@ -44,7 +20,7 @@ In the paper, The Weak-password problem: Chaos, criticality, and encrypted p-CAP
 \subsection*{Resisting a Brute-Force Attack}
 In order to carry out a brute-force attack, a computer must solve a Recognition Problem, that is, as each candidate key is tested, the computer must differentiate whether the corresponding \emph{possibly} decrypted file is in fact a correctly decrypted file or useless information obtained from a wrong decryption key. Decryption therefore requires a Recognition Oracle. Recognition oracles can make use of known file formats in order to recognize that a plaintext is indeed correct.
 
-	Laptyeva et al. \cite{laptyeva} present a technique to resist a brute-force attack even when the decryption key space is small. Their approach is to focus on strengthening the difficulty of the recognition problem through the use of a Completely Automated Public Turing test to tell Computers and Humans Apart (CAPTCHA). In Laptyeva et al's system, the encryption key (EK) (which is also used as the decryption key) is the sum of a short password (SP) that the user memorizes, and a strong key (SK) that the computer provides. $EK = SP + SK$. SK is text in the form of a hard to recognize CAPTCHA-ized image, which they call a p-CAPTCHA. The image of SK is not stored on the computer, but rather a transformed version of it. In order to obtain the image of SK, the user types in SP which the computer uses to run the transformation process in reverse to obtain the image of SK. At this point, the computer shows the image of SK to a human who then types it in.
+	Laptyeva et al. present a technique to resist a brute-force attack even when the decryption key space is small \cite{laptyeva}. Their approach is to focus on strengthening the difficulty of the recognition problem through the use of a Completely Automated Public Turing test to tell Computers and Humans Apart (CAPTCHA). In Laptyeva et al's system, the encryption key (EK) (which is also used as the decryption key) is the sum of a short password (SP) that the user memorizes, and a strong key (SK) that the computer provides. $EK = SP + SK$. SK is text in the form of a hard to recognize CAPTCHA-ized image, which they call a p-CAPTCHA. The image of SK is not stored on the computer, but rather a transformed version of it. In order to obtain the image of SK, the user types in SP which the computer uses to run the transformation process in reverse to obtain the image of SK. At this point, the computer shows the image of SK to a human who then types it in.
 
 	An attacker might be able to obtain the file which has the transformed image of SK and attempt a brute-force attack by applying all short passwords to the transformed SK until finding the correct one. This approach will not work, however, because reversing a transformation with the wrong SP will produce an image similar to the correct image of SK. Thus, even though the computer may be able to work through all of SP's small key space, it runs into a Recognition Problem. It cannot decide which of the possible images of SK is the correct one. In this way, the original user gains the benefits of a strong password while only needing to memorize a short password.
 
@@ -58,8 +34,7 @@ $SP_1, SP_2, \ldots, SP_{k-1}, SP_{true}, SP_{k+1}, \ldots SP_n$.
 Associated with each decryption key is a candidate image, $IM_k$, which is a reverse transformation of the transformed image of the strong key, SK:
 $$IM_1, IM_2, \ldots, IM_{k-1}, IM_{true}, IM_{k+1}, \ldots, IM_n.$$
 Let $R$ be a recognition oracle that attempts to find the true plaintext by solving an optimization problem. Because of the large number of possible plaintexts, and the fact that an attacker does not know what the plaintext is, we will model the score from the recognition oracle as a random variable, with a distribution that depends on $R$. Because $IM_{true}$ may look a little different from other candidate images, we will say that
-%$$R\left(IM_k\right) = \langleY ~ F(\textbf{\theta}), $$
- \begin{displaymath}
+\begin{displaymath}
    R\left(IM_k\right) = \left\{
      \begin{array}{lr}
        X_k \sim f(x; \mathbf{\theta}) & \hbox{if } IM_k \neq IM_{true}\\
@@ -79,7 +54,13 @@ Dividing both sides of the last inequality by $n_{sp}$, we get system security w
 
 CAPTCHAs are sometimes broken so it is worthwhile to have ideas of different approaches. Similarly, it is valuable to learn about more possible ways of creating p-CAPTCHAs in case one of them is broken. 
 
-%Window of readibility--In order for a p-CAPTCHA system to be successful, the plaintext must be sufficiently a sufficiently strong CAPTCHA that a human can read it but a computer cannot. In the fuzzy letter tiles CAPTCHA,  The boundary between readable and unreadable plaintext may not be a 
+\begin{figure}
+	\begin{center}
+		\includegraphics[scale=.37]{CAPTCHA_Levels.png}
+	\end{center}
+	\caption{A p-CAPTCHA system not only requires that a computer cannot read a CAPTCHA, but that it cannot recognize it either. This narrows the range of possible images.}
+\label{CAPTCHALevels}
+\end{figure}
 
 %If the computer cannot solve the recognition problem but can read still read the CAPTCHA plaintext (obtaining spurious strong keys from false candidate images) then it will nevertheless have SK which puts it a lot closer to obtaining EK.
 
@@ -90,79 +71,75 @@ CAPTCHAs are sometimes broken so it is worthwhile to have ideas of different app
 %A good CAPTCHA is not enough. A p-CAPTCHA system must contain both a CAPTCHA and a recognition problem.
 
 \subsection*{Fuzzy Letter Tiles}
-	Another p-CAPTCHA encryption method involves rearranging tiles of hard to recognize “fuzzy” letters. An example of this method is given in figure 1. First, a strong key (SK) is written as an image with warped and randomly offset letters. Second, random pixels are XORed between black and white to remove the presence of well-defined edges. Third, the image is partitioned into tiles. Fourth, the tiles are rearranged according to a permutation identified by the short password (SP).
+	Another p-CAPTCHA encryption method involves rearranging tiles of hard to recognize “fuzzy” letters. An example of this method is given in Figure~{\ref{EncryptionProcess}}. First, a strong key (SK) is written as an image with warped and randomly offset letters. Second, random pixels are XORed between black and white to remove the presence of well-defined edges. Third, the image is partitioned into tiles. Fourth, the tiles are rearranged according to a permutation identified by the short password (SP).
 
 \begin{figure}
-	\includegraphics[scale=.5]{warpedSK.png}
-	\includegraphics[scale=.5]{warpedfrosty.png}
-	\includegraphics[scale=.5]{SKBreakLines.jpg}
-	\includegraphics[scale=.5]{SK75391.png}
+	\begin{center}
+		\includegraphics[scale=.5]{EncryptionProcess.png}
+	\end{center}
 	\caption{The encryption process: 1. The strong key 2. Adding noise to hide edges 3. Dividing the image into tiles 4. Permuting the tiles according to a short password}
 \label{EncryptionProcess}
 \end{figure}
 
 %\begin{figure}
-%	\centering	
-%	\subfloat{\label{fig:warpedSK}\includegraphics[width=.25]{warpedSK.png}}
-%	\subfloat{\label{fig:warpedfrosty}\includegraphics[width=.25]{warpedfrosty.png}}
-%	\subfloat{\label{fig:SKbreaklines}\includegraphics[width=.25]{SKbreaklines.png}}
-%	\subfloat{\label{fig:SK75391}\includegraphics[width=.25]{SK75391.png}}
+%	\includegraphics[scale=.4]{warpedSK.png}
+%	\includegraphics[scale=.4]{warpedfrosty.png}
+%	\includegraphics[scale=.4]{SKBreakLines.jpg}
+%	\includegraphics[scale=.4]{SK75391.png}
 %	\caption{The encryption process: 1. The strong key 2. Adding noise to hide edges 3. Dividing the image into tiles 4. Permuting the tiles according to a short password}
-%	\label{fig:EncryptionProcess}
+%\label{EncryptionProcess}
 %\end{figure}
 
 	Noise was added to the image in step two in order to increase the difficulty of finding edges. When a letter is cut into pieces and those pieces are shifted around, the total amount of letter edge length will likely increase. If edges were easily discernible, the plaintext would be recognizable because it would have less total edge length. Decryption simply requires finding the inverse of the permutation corresponding to SP and rearranging the blocks into their original, human-readable form.
 
-	The image above was encrypted by permuting 57 blocks. Although there are 57-factorial permutations of 57 blocks, most of these permutations are irrelevant. Each permutation must be tied to a decryption key in order for it to be found by the user. Since we are assuming that the decryption algorithm is known, an attacker will only have to deal with as many candidate images as the decryption algorithm will produce from the small decryption key space.
+	The p-CAPTCHA plaintext in Figure~{\ref{EncryptionProcess}} encrypted by permuting 57 blocks. Although there are 57-factorial permutations of 57 blocks, most of these permutations are irrelevant. Each permutation must be tied to a decryption key in order for it to be found by the user. Since we are assuming that the decryption algorithm is known, an attacker will only have to deal with as many candidate images as the decryption algorithm will produce from the small decryption key space.
 
-	Successfully attacking the p-CAPTCHA system presented here requires differentiating the true plaintext from the $n_{sp}$ candidate plaintexts. Three spurious plaintexts along with the true plaintext are shown in figure two.
+	Successfully attacking the p-CAPTCHA system presented here requires differentiating the true plaintext from the $n_{sp}$ candidate plaintexts. Three spurious plaintexts along with the true plaintext are shown in Figure~{\ref{RecognitionProblem}.
 
 \begin{figure}
-	\includegraphics[scale=.5]{SK75392.png}
-	\includegraphics[scale=.5]{SK75393.png}
-	\includegraphics[scale=.5]{warpedfrosty.png}
-	\includegraphics[scale=.5]{SK75395.png}
+	\begin{center}
+		\includegraphics[scale=.5]{RecognitionProblem.png}
+	\end{center}
 	\caption{Can your computer recognize the true plaintext?}
 \label{RecognitionProblem}
 \end{figure}
 
 %\begin{figure}
-%	\centering
-%	\subfloat{\label{fig:SK75393}\includegraphics[width=.25]{SK75393.png}}
-%	\subfloat{\label{fig:SK75392}\includegraphics[width=.25]{SK75392.png}}
-%	\subfloat{\label{fig:warpedfrosty}\includegraphics[width=.25]{warpedfrosty.png}}
-%	\subfloat{\label{fig:SK75394}\includegraphics[width=.25]{SK75394.png}}
+%	\includegraphics[scale=.4]{SK75392.png}
+%	\includegraphics[scale=.4]{SK75393.png}
+%	\includegraphics[scale=.4]{warpedfrosty.png}
+%	\includegraphics[scale=.4]{SK75395.png}
 %	\caption{Can your computer recognize the true plaintext?}
-%	\label{fig:RecognitionProblem}
+%\label{RecognitionProblem}
 %\end{figure}
 
-Some parameters of this system could be adjusted, such as the size of the letters, the amount of fuzziness (noise) in the background and in the letters, and the size of the tiles that get permuted. We do not want our tiles to be so small that permuting them makes the image look like pure noise, with no semblance of letters. We also do not want our tiles to be so large that a good portion of the letter is contained in each tile. While this would make the scrambled plaintext look a lot like the true plaintext, a human could figure out what letters were being used by looking at a scrambled image. By entering typing these letters into the computer, the computer could then try just brute force attacking with permutations of these letters without needing to solve any OCR problem.
+Some parameters of this system could be adjusted, such as the size of the letters, the amount of fuzziness (noise) in the background and in the letters, and the size of the tiles that get permuted. By adjusting these parameters, we can better position ourselves in the window of possible images that are too difficult for a human to recognize, but still possible for a human to read without confusing the letters.
+
+Some care should be taken when choosing parameters. We do not want our tiles to be so small that permuting them makes the image look like pure noise, with no semblance of letters. We also do not want our tiles to be so large that a good portion of the letter is contained in each tile. While this would make the scrambled plaintext look a lot like the true plaintext, a human could figure out what letters were being used by looking at a scrambled image. By typing these letters into the computer, the computer could then try a brute force attack with permutations of these letters without needing to solve any OCR problem.
 
 
-%Advantage: easy to try different configurations of fonts, text size, fuzziness, tile sizes, etc.
-%My system is easy to understand and implement.
 
-%\section*{Stuff}
-%(I want to include some these things in my paper, but I still don't know where I will fit them in.)
-
-
-%The image orientation CORTCHA thing won't work.
-
-@Article{,
-author = {T. V. Laptyeva, S. Flach, K. Kladko},
-title = {The Weak-password problem: Chaos, criticality, and encrypted p-CAPTCHAs},
-journal = {EPL},
-year = {2011},
-OPTkey = {•},
-OPTvolume = {95},
-OPTnumber = {•},
-OPTpages = {•},
-OPTmonth = {•},
-OPTnote = {•},
-OPTannote = {•}
-}
 \begin{thebibliography}
 \bibliography{laptyeva}
+
+	\bibitem{laptyeva}
+		T. V. Laptyeva, S. Flach, K. Kladko
+	
+	%author = {T. V. Laptyeva, S. Flach, K. Kladko},
+	%title = {The Weak-password problem: Chaos, criticality, and encrypted p-CAPTCHAs},
+	%journal = {EPL},
+	%year = {2011},
+	%OPTvolume = {95}
+
+	
+%@Article{laptyeva,
+%author = {T. V. Laptyeva, S. Flach, K. Kladko},
+%title = {The Weak-password problem: Chaos, criticality, and encrypted p-CAPTCHAs},
+%journal = {EPL},
+%year = {2011},
+%OPTvolume = {95}
+}
+
 %\bibitem{laptyeva} \Author{She's Ukranian.}
 \end{thebibliography}
 
