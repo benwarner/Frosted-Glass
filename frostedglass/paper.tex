@@ -28,38 +28,9 @@ An attacker might be able to obtain the file which has the transformed image of 
 
 Laptyeva et al. spend much of their paper describing the transformation process on SK, but devote very little space explaining why the computer will have difficulty differentiating a true image of SK, as produced by the correct SP, from a spurious one obtained from the wrong SP, yet the strength of the system depends on the difficulty of solving this recognition problem. The remainder of this paper will be devoted to the presentation of another p-CAPTCHA system and a discussion of metrics related to solving a recognition problem.
 
-\section*{Attacking a p-CAPTCHA System}
-Sometimes, a CAPTCHA is broken by Optical Character Recognition (OCR) software. For example, software was designed that could break the EZGimpy CAPTCHA (an early CAPTCHA used at Yahoo) with a 92\% success rate and a few seconds of processor time \cite{mori}. This success rate certainly renders a traditional CAPTCHA system ineffective, but breaking a p-CAPTCHA requires sifting through thousands of candidate images (depending on the size of your key space) in order to find a single true plaintext. Recognizing a human-readable plaintext is a different problem than reading the plaintext, and requires a different metric.
-
-This suggests that the objective of a p-CAPTCHA “cryptanalysis” is to identify a small subset of potentially correct candidate images to show to a human user. One way to do this would be to have a function that takes in every image and creates a score based on how likely it is that the image being viewed is the true image (the plaintext). With each candidate image having a score, the candidates can be sorted and then the computer can either try to read the CAPTCHA directly and enter the password, or the images can be shown to a human user in order of most likely, according to the computer's judgement, to be the plaintext.
-
-\subsection*{Modeling with Random Variables}
-The above discussion motivates a metric on how quickly a true image can be found. Suppose that we have $n_{SP}$ potential "short password" decryption keys with one being the true decryption key: 
-$SP_1, SP_2, \ldots, SP_{k-1}, SP_{true}, SP_{k+1}, \ldots SP_n$.
-Associated with each decryption key is a Candidate Image, $CI_k$, which is a reverse transformation of the transformed image of the strong key, SK:
-$$CI_1, CI_2, \ldots, CI_{k-1}, CI_{true}, CI_{k+1}, \ldots, CI_n.$$
-Let $R$ be a recognition oracle that attempts to find the true plaintext by solving an optimization problem. Because of the large number of possible plaintexts, and the fact that an attacker does not know what the plaintext is, we will model the score from the recognition oracle as a random variable, with a distribution that depends on $R$. Because $CI_{true}$ may look a little different from other candidate images, we will say that
-\begin{displaymath}
-   R\left(CI_k\right) = \left\{
-     \begin{array}{lr}
-       X_k \sim f(x; \mathbf{\theta}) & \hbox{if } CI_k \neq CI_{true}\\
-       Y \sim g(y; \mathbf{\lambda}) & \hbox{if } CI_k = CI_{true}
-     \end{array}
-   \right.
-\end{displaymath}
-where random variable $Y$ may be distributed differently than each $X_k$, but the $X_k$'s are treated as though they are independent and identically distributed.
-
-Once the candidate plaintext images are ranked, the computer could show them to a human who could then recognize the true image. Because human labor is costly, this approach will have a feasibilty constraint, $n_f$. This approach will be feasible if the expected rank of the true image is less than $n_f$, that is, if no more than $n_f$ images will be ranked as more likely to be the true plaintext. If computer software can read the CAPTCHA with some amount of processor time, then $n_f$ could also represent the point at which it takes too long for a computer to read each image.
-
-Let $\mu_y$ be the expected value of $Y \sim g(\mathbf{\lambda})$. Suppose that our recognition oracle is trying to find $CI_{true}$ by minimizing a given measurement from each image. Form a $\alpha\%$ lower confidence interval around $\mu_y$ which has lower bound $l$. $l$ is a score from $R$. In other words, we are 95\% confident that $R(CI_{true}) > l$. Now we want to find how many $R(CI_k) < l$ when $CI_k \neq CI_{true}$. Since $R\left(CI_k\right) \sim f(\mathbf{\theta})$, it will be $F(l) n_{SP}$. If $n_f < F(l) n_{SP}$ then it is economically impractical to attack the system.
-
-Dividing both sides of the last inequality by $n_{sp}$, we get system security when $\frac{n_f}{n_{SP}} < F(l)$. This could be accomplished by increasing $n_{SP}$, but if we could increase the size of our key space, we may as well use a traditional symmetric-key cryptosystem like AES. Thus, a p-CAPTCHA system is valuable when $n_{SP}$ is small and cannot be increased. We are trying to make the recognition problem sufficiently difficult that $F(l)$ is large. Because we are designing $R$ to give a lower score to $CI_{true}$, $F(l)$ will be largest when the distribution of $X_k$ is close to the distribution of $Y$, or in other words, when $R$ mistakenly assigns low scores to false candidate plaintexts because they look a lot like the true plaintext.
-
-This metric can be applied to any approach that attempts to recognize a true plaintext from a false one by minimizing some measurement of each candidate image, whether this is being applied to the p-CAPTCHA system presented by Laptyeva et al., the one presented in this paper, or another approach. The actual shapes of the score distributions for a given recognition oracle, and the parameters of those distributions, should be measured empirically. A framework similar to this could be applied to an attack that maximizes some measurement of each candidate image.
-
 \section*{Designing a p-CAPTCHA System}
 
-CAPTCHAs are sometimes broken so it is worthwhile to have ideas of different approaches. Similarly, it is valuable to learn about more possible ways of creating p-CAPTCHAs in case one of them is broken. Some general things to consider when designing a p-CAPTCHA system:
+CAPTCHAs are sometimes broken so it is worthwhile to have ideas of different approaches. Similarly, it is valuable to learn about more possible ways of creating p-CAPTCHAs in case one of them is broken. We consider the following general principles when designing a p-CAPTCHA system:
 \begin{itemize}
 \item The variety of CAPTCHAs that one can use is smaller when trying to exploit the recognition problem because recognizing a true p-CAPTCHA plaintext will generally be easier than reading a CAPTCHA. (See Figure~{\ref{CAPTCHALevels}}.) One must have a CAPTCHA and a transformation that makes the transformed plaintexts look like the true plaintext.
 \item The computer will not have to filter through more candidate plaintexts than the number of decryption keys. We assume that the attacker has access to the decryption algorithm, in which case the attacker could put each possible key into the decryption algorithm and set the recognition oracle to the corresponding image.
@@ -107,6 +78,34 @@ Some care should be taken when choosing parameters. We do not want our tiles to 
 
 A few approaches may be taken to attack the p-CAPTCHA system presented here. 
 
+\section*{Attacking a p-CAPTCHA System}
+Sometimes, a CAPTCHA is broken by Optical Character Recognition (OCR) software. For example, software was designed that could break the EZGimpy CAPTCHA (an early CAPTCHA used at Yahoo) with a 92\% success rate and a few seconds of processor time \cite{mori}. This success rate certainly renders a traditional CAPTCHA system ineffective, but breaking a p-CAPTCHA requires sifting through thousands of candidate images (depending on the size of your key space) in order to find a single true plaintext. Recognizing a human-readable plaintext is a different problem than reading the plaintext, and requires a different metric.
+
+This suggests that the objective of a p-CAPTCHA “cryptanalysis” is to identify a small subset of potentially correct candidate images to show to a human user. One way to do this would be to have a function that takes in every image and creates a score based on how likely it is that the image being viewed is the true image (the plaintext). With each candidate image having a score, the candidates can be sorted and then the computer can either try to read the CAPTCHA directly and enter the password, or the images can be shown to a human user in order of most likely, according to the computer's judgement, to be the plaintext.
+
+\subsection*{Modeling with Random Variables}
+The above discussion motivates a metric on how quickly a true image can be found. Suppose that we have $n_{SP}$ potential "short password" decryption keys with one being the true decryption key: 
+$SP_1, SP_2, \ldots, SP_{k-1}, SP_{true}, SP_{k+1}, \ldots SP_n$.
+Associated with each decryption key is a Candidate Image, $CI_k$, which is a reverse transformation of the transformed image of the strong key, SK:
+$$CI_1, CI_2, \ldots, CI_{k-1}, CI_{true}, CI_{k+1}, \ldots, CI_n.$$
+Let $R$ be a recognition oracle that attempts to find the true plaintext by solving an optimization problem. Because of the large number of possible plaintexts, and the fact that an attacker does not know what the plaintext is, we will model the score from the recognition oracle as a random variable, with a distribution that depends on $R$. Because $CI_{true}$ may look a little different from other candidate images, we will say that
+\begin{displaymath}
+   R\left(CI_k\right) = \left\{
+     \begin{array}{lr}
+       X_k \sim f(x; \mathbf{\theta}) & \hbox{if } CI_k \neq CI_{true}\\
+       Y \sim g(y; \mathbf{\lambda}) & \hbox{if } CI_k = CI_{true}
+     \end{array}
+   \right.
+\end{displaymath}
+where random variable $Y$ may be distributed differently than each $X_k$, but the $X_k$'s are treated as though they are independent and identically distributed.
+
+Once the candidate plaintext images are ranked, the computer could show them to a human who could then recognize the true image. Because human labor is costly, this approach will have a feasibilty constraint, $n_f$. This approach will be feasible if the expected rank of the true image is less than $n_f$, that is, if no more than $n_f$ images will be ranked as more likely to be the true plaintext. If computer software can read the CAPTCHA with some amount of processor time, then $n_f$ could also represent the point at which it takes too long for a computer to read each image.
+
+Let $\mu_y$ be the expected value of $Y \sim g(\mathbf{\lambda})$. Suppose that our recognition oracle is trying to find $CI_{true}$ by minimizing a given measurement from each image. Form a $\alpha\%$ lower confidence interval around $\mu_y$ which has lower bound $l$. $l$ is a score from $R$. In other words, we are 95\% confident that $R(CI_{true}) > l$. Now we want to find how many $R(CI_k) < l$ when $CI_k \neq CI_{true}$. Since $R\left(CI_k\right) \sim f(\mathbf{\theta})$, it will be $F(l) n_{SP}$. If $n_f < F(l) n_{SP}$ then it is economically impractical to attack the system.
+
+Dividing both sides of the last inequality by $n_{sp}$, we get system security when $\frac{n_f}{n_{SP}} < F(l)$. This could be accomplished by increasing $n_{SP}$, but if we could increase the size of our key space, we may as well use a traditional symmetric-key cryptosystem like AES. Thus, a p-CAPTCHA system is valuable when $n_{SP}$ is small and cannot be increased. We are trying to make the recognition problem sufficiently difficult that $F(l)$ is large. Because we are designing $R$ to give a lower score to $CI_{true}$, $F(l)$ will be largest when the distribution of $X_k$ is close to the distribution of $Y$, or in other words, when $R$ mistakenly assigns low scores to false candidate plaintexts because they look a lot like the true plaintext.
+
+This metric can be applied to any approach that attempts to recognize a true plaintext from a false one by minimizing some measurement of each candidate image, whether this is being applied to the p-CAPTCHA system presented by Laptyeva et al., the one presented in this paper, or another approach. The actual shapes of the score distributions for a given recognition oracle, and the parameters of those distributions, should be measured empirically. A framework similar to this could be applied to an attack that maximizes some measurement of each candidate image.
 
 \bibliographystyle{plain}
 \bibliography{references}
