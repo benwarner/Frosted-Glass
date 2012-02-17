@@ -1,5 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage{graphicx}
+\usepackage{amsthm}
+\newtheorem{mydef}{Definition}
 
 \begin{document}
 \title{p-CAPTCHAs and the Recognition Problem}
@@ -11,44 +13,51 @@ In the paper, The Weak-password problem: Chaos, criticality, and encrypted p-CAP
 \end{abstract}
 
 \section*{Introduction}
-	Modern cryptosystems combine a publicly available algorithm with one or more secret keys in order to encrypt a secret message so that only possessors of the decryption key are able to reverse the process and read the message. Because the algorithm is publicly available, the security of the cryptosystem depends on the difficulty of not being able to run the encryption process in reverse to turn the ciphertext (encrypted text) back into plaintext (decrypted text) without possession of the decryption key. Cryptosystems such as AES make the ciphertext apparently random, so that analyzing statistical properties of the ciphertext do not reveal enough information to obtain the plaintext without possessing the decryption key. (In AES, encryption and decryption are performed using the same key, but we are assuming an attacker does not possess it.)
+Modern cryptosystems combine a publicly available encryption algorithm with one or more secret keys in order to convert a computer or human readable message (plaintext) into data that cannot be read by a computer or human (ciphertext). Typically, the encryption and decryptions algorithms are publically available, but are designed so that only possessors of the decryption key are able to use the decryption algorithm to read the message. Cryptosystems such as the Advanced Encryption Standard (AES) put the bits of the message file through a series of substitutions and permutations until the ciphertext becomes apparently random, so that analyzing statistical properties of the ciphertext do not reveal enough information to obtain the plaintext without possessing the decryption key. (In AES, encryption and decryption are performed using the same key, but we are assuming an attacker does not possess it.)
 
-	One well known way of attacking a cryptosystem is to employ a brute force attack, that is, to use a computer to systematically try every key in the decryption key space (set of possible decryption keys). This is known as the brute-force attack. In order to make the brute-force attack infeasible, cryptosystems such as AES use large key spaces (such as 128-bit keys) so that there will be too many potential keys to search through in any reasonable amount of time. However, the brute-force attack may succeed if an attacker has access to greater computing resources. Advances in hardware technology allowed the Digital Encryption Standard (DES) to be broken in the late 1990s by means of a brute-force attack. (AES, the successor to DES, uses a much larger key space.)
+One well known way of attacking a cryptosystem is to employ a brute-force attack, that is, to use a computer to systematically try every key in the decryption key space (set of possible decryption keys). In order to make the brute-force attack infeasible, cryptosystems such as AES use large key spaces (128-bit keys or larger) so that there will be too many potential keys to search through in any reasonable amount of time. However, the brute-force attack may succeed if an attacker has access to greater computing resources. Advances in hardware technology allowed the Digital Encryption Standard (DES) to be broken in the late 1990s by means of a brute-force attack. (DES only used 56-bit keys.)
 
-	Another possible scenario in which a brute-force attack would be possible is when the users of a cryptosystem cannot use a large key space or choose not to use all of a potential key space because it is inconvenient to do so. An example of this occurs when someone encrypts a file using a password as a key, but because of the difficulty of remembering a long password, the user chooses one which is a dictionary word or is too short. This allows a computer to systematically work through the set of all such weak passwords until it finds the one that appropriately decrypts the file. In this case, the decryption key space is too small.
+Another possible scenario in which a brute-force attack would be possible is when the users of a cryptosystem cannot use a large key space or choose not to use all of a potential key space because it is inconvenient to do so. An example of this occurs when someone encrypts a file using a password as a key, but because of the difficulty of remembering a long password, the user chooses one which is a dictionary word or is too short. This allows a computer to systematically work through the set of all such weak passwords until it finds the one that appropriately decrypts the file. In this case, the decryption key space is too small.
 
 \subsection*{Resisting a Brute-Force Attack}
-In order to carry out a brute-force attack, a computer must solve a Recognition Problem, that is, as each candidate key is tested, the computer must differentiate whether the corresponding \emph{possibly} decrypted file is in fact a correctly decrypted file or useless information obtained from a wrong decryption key. Decryption therefore requires a Recognition Oracle. Recognition oracles can make use of known file formats in order to recognize that a plaintext is indeed correct.
+In order to carry out a brute-force attack, a computer must solve a recognition problem, that is, as each candidate key is tested, the computer must differentiate whether the corresponding \emph{possibly} decrypted file is in fact a correctly decrypted file or useless information obtained from a wrong decryption key. Decryption therefore requires a recognition oracle. Recognition oracles can make use of known file formats in order to recognize that a plaintext is indeed correct.
 
-	Laptyeva et al. present a technique to resist a brute-force attack even when the decryption key space is small \cite{laptyeva}. Their approach is to focus on strengthening the difficulty of the recognition problem through the use of a Completely Automated Public Turing test to tell Computers and Humans Apart (CAPTCHA). In Laptyeva et al's system, the encryption key (EK) (which is also used as the decryption key) is the sum of a short password (SP) that the user memorizes, and a strong key (SK) that the computer provides. $EK = SP + SK$. SK is text in the form of a hard to recognize CAPTCHA-ized image, which they call a p-CAPTCHA. The image of SK is not stored on the computer, but rather a transformed version of it. In order to obtain the image of SK, the user types in SP which the computer uses to run the transformation process in reverse to obtain the image of SK. At this point, the computer shows the image of SK to a human who then types it in.
+Laptyeva et al. present a technique to resist a brute-force attack even when the decryption key space is small \cite{laptyeva}. Their approach is to focus on increasing the difficulty of the recognition problem through the use of a Completely Automated Public Turing test to tell Computers and Humans Apart (CAPTCHA). In Laptyeva et al's system, the encryption key (EK) (which is also used as the decryption key) is the sum of a short password (SP) that the user memorizes, and a strong key (SK) that the computer provides. SK is text in the form of a hard to recognize CAPTCHA-ized image, which they call a p-CAPTCHA. The image of SK is not stored on the computer, but rather a transformed version of it. This CAPTCHA-ized SK is considered to be the plaintext, and the transformed version of it the ciphertext. In order to obtain the image of SK, the user types in SP which the computer uses to run the transformation process in reverse to obtain the image of SK. At this point, the computer shows the image of SK to a human who then types it in.
 
-	An attacker might be able to obtain the file which has the transformed image of SK and attempt a brute-force attack by applying all short passwords to the transformed SK until finding the correct one. This approach will not work, however, because reversing a transformation with the wrong SP will produce an image similar to the correct image of SK. Thus, even though the computer may be able to work through all of SP's small key space, it runs into a Recognition Problem. It cannot decide which of the possible images of SK is the correct one. In this way, the original user gains the benefits of a strong password while only needing to memorize a short password.
+An attacker might be able to obtain the file which has the transformed image of SK and attempt a brute-force attack by applying all short passwords to the transformed SK until finding the correct one. This approach will not work, however, because reversing a transformation with the wrong SP will produce an image similar to the correct image of SK. Thus, even though the computer may be able to work through all of SP's small key space, it runs into a recognition problem. It cannot decide which of the possible images of SK is the correct one. In this way, the original user gains the benefits of a strong password while only needing to memorize a short password.
 
-	Laptyeva et al spend much of their paper describing the transformation process on SK, but devote very little space explaining why the computer will have difficulty differentiating a true image of SK, as produced by the correct SP, from a spurious one obtained from the wrong SP, yet the strength of the system depends on the difficulty of solving this recognition problem. The remainder of this paper will be devoted to a discussion of metrics related to solving a recognition problem, and the presentation of another p-CAPTCHA system.
+Laptyeva et al. spend much of their paper describing the transformation process on SK, but devote very little space explaining why the computer will have difficulty differentiating a true image of SK, as produced by the correct SP, from a spurious one obtained from the wrong SP, yet the strength of the system depends on the difficulty of solving this recognition problem. The remainder of this paper will be devoted to a discussion of metrics related to solving a recognition problem, and the presentation of another p-CAPTCHA system.
 
 \section*{Attacking a p-CAPTCHA System}
-	The objective of a p-CAPTCHA “cryptanalysis” is to identify a small subset of potentially correct candidate images to show to a human user. One way to do this would be to have a function that takes in every image and creates a score based on how likely it is that the image being viewed is the true image (the plaintext). With each candidate image having a score, the candidates can be sorted and then the computer can either try to read the CAPTCHA directly and enter the password, or the images can be shown to a human user in order of most likely (according to the computer's judgement) to be the plaintext.
+Sometimes, a CAPTCHA is broken by Optical Character Recognition (OCR) software. For example, software was designed that could break the EZGimpy CAPTCHA (an early CAPTCHA used at Yahoo) with a 92\% success rate and a few seconds of processor time \cite{mori}. This success rate certainly renders a traditional CAPTCHA system ineffective, but breaking a p-CAPTCHA requires sifting through thousands of candidate images (depending on the size of your key space) in order to find a single true plaintext. Recognizing the existence of a human-readable plaintext is a different problem than reading the plaintext, and requires a different metric.
 
-    This introduces a metric on how quickly a true image can be found. Suppose that we have $n_{SP}$ potential decryption keys with one being the true decryption key: 
+This suggests that the objective of a p-CAPTCHA “cryptanalysis” is to identify a small subset of potentially correct candidate images to show to a human user. One way to do this would be to have a function that takes in every image and creates a score based on how likely it is that the image being viewed is the true image (the plaintext). With each candidate image having a score, the candidates can be sorted and then the computer can either try to read the CAPTCHA directly and enter the password, or the images can be shown to a human user in order of most likely (according to the computer's judgement) to be the plaintext.
+
+\subsection*{Modeling with Random Variables}
+The above discussion motivates a metric on how quickly a true image can be found. Suppose that we have $n_{SP}$ potential "short password" decryption keys with one being the true decryption key: 
 $SP_1, SP_2, \ldots, SP_{k-1}, SP_{true}, SP_{k+1}, \ldots SP_n$.
-Associated with each decryption key is a candidate image, $IM_k$, which is a reverse transformation of the transformed image of the strong key, SK:
-$$IM_1, IM_2, \ldots, IM_{k-1}, IM_{true}, IM_{k+1}, \ldots, IM_n.$$
-Let $R$ be a recognition oracle that attempts to find the true plaintext by solving an optimization problem. Because of the large number of possible plaintexts, and the fact that an attacker does not know what the plaintext is, we will model the score from the recognition oracle as a random variable, with a distribution that depends on $R$. Because $IM_{true}$ may look a little different from other candidate images, we will say that
+Associated with each decryption key is a Candidate Image, $CI_k$, which is a reverse transformation of the transformed image of the strong key, SK:
+$$CI_1, CI_2, \ldots, CI_{k-1}, CI_{true}, CI_{k+1}, \ldots, CI_n.$$
+Let $R$ be a recognition oracle that attempts to find the true plaintext by solving an optimization problem. Because of the large number of possible plaintexts, and the fact that an attacker does not know what the plaintext is, we will model the score from the recognition oracle as a random variable, with a distribution that depends on $R$. Because $CI_{true}$ may look a little different from other candidate images, we will say that
 \begin{displaymath}
-   R\left(IM_k\right) = \left\{
+   R\left(CI_k\right) = \left\{
      \begin{array}{lr}
-       X_k \sim f(x; \mathbf{\theta}) & \hbox{if } IM_k \neq IM_{true}\\
-       Y \sim g(y; \mathbf{\lambda}) & \hbox{if } IM_k = IM_{true}
+       X_k \sim f(x; \mathbf{\theta}) & \hbox{if } CI_k \neq CI_{true}\\
+       Y \sim g(y; \mathbf{\lambda}) & \hbox{if } CI_k = CI_{true}
      \end{array}
    \right.
 \end{displaymath}
-where random variable $Y$ may be distributed differently than each $X_k$, but the $X_k$'s are treated as though they were independent and identically distributed.
-%Stuff about order statistics?
-Once the candidate plaintext images are ranked, the computer could show them to a human who could then recognize the true image. Because human labor is costly, this approach will have a feasibilty constraint, $n_f$. This approach will be feasible if the expected rank of the true image is less than $n_f$ (i.e. it is expected that no more than $n_f$ images will be ranked as more likely to be the true plaintext). If ranking an image is faster then trying to read a CAPTCHA, and the computer can eventually read the CAPTCHA, then $n_f$ could also represent the point at which the process takes too long for a computer.
+where random variable $Y$ may be distributed differently than each $X_k$, but the $X_k$'s are treated as though they are independent and identically distributed.
 
-Let $\mu_y$ value of $Y \sim g(\mathbf{\lambda})$. Suppose that our recognition oracle is trying to find the solution to a minimization problem. Form a 95\% lower confidence interval around $\mu_y$ which has lower bound $l$. $l$ is a score from $R$. In other words, we are 95\% confident that $R\left(IM_{true}\right) > l$. Now we want to find how many $R\left(IM_k\right) < l$ when $IM_k \neq IM_{true}$. Since $R\left(IM_k\right) \sim f(\mathbf{\theta})$, it will be $F(l) n_{SP}$. If $n_f < F(l) n_{SP}$ then it is economically impractical to attack the system.
+Once the candidate plaintext images are ranked, the computer could show them to a human who could then recognize the true image. Because human labor is costly, this approach will have a feasibilty constraint, $n_f$. This approach will be feasible if the expected rank of the true image is less than $n_f$ (i.e. it is expected that no more than $n_f$ images will be ranked as more likely to be the true plaintext). If computer software can read the CAPTCHA with some amount of processor time, then $n_f$ could also represent the point at which the process takes too long for a computer to try reading each image.
 
-Dividing both sides of the last inequality by $n_{sp}$, we get system security when $\frac{n_f}{n_{SP}} < F(l)$. This could be accomplished by increasing $n_{SP}$, but if we could increase the size of our key space, we may as well go use a traditional symmetric-key cryptosystem like AES. Thus, a p-CAPTCHA system is valuable when $n_{SP}$ is small and cannot be increased. We are trying to make the recognition problem sufficiently difficult that $F(l)$ is large.
+Let $\mu_y$ value of $Y \sim g(\mathbf{\lambda})$. Suppose that our recognition oracle is trying to find the solution to a minimization problem. Form a 95\% lower confidence interval around $\mu_y$ which has lower bound $l$. $l$ is a score from $R$. In other words, we are 95\% confident that $R(CI_{true}) > l$. Now we want to find how many $R(CI_k) < l$ when $CI_k \neq CI_{true}$. Since $R\left(CI_k\right) \sim f(\mathbf{\theta})$, it will be $F(l) n_{SP}$. If $n_f < F(l) n_{SP}$ then it is economically impractical to attack the system.
+
+Dividing both sides of the last inequality by $n_{sp}$, we get system security when $\frac{n_f}{n_{SP}} < F(l)$. This could be accomplished by increasing $n_{SP}$, but if we could increase the size of our key space, we may as well use a traditional symmetric-key cryptosystem like AES. Thus, a p-CAPTCHA system is valuable when $n_{SP}$ is small and cannot be increased. We are trying to make the recognition problem sufficiently difficult that $F(l)$ is large.
+
+\begin{mydef}
+Let $l$ be a $\alpha$ lower confidence bound for the expected score of the true plaintext $y$ from recognition oracle $R$, and let the decryption key space have size $n_{SP}$, and feasibility constraint $n_f$. Let $F(x; \mathbf{\theta})$ be the CDF of scores from $R$ of the false plaintexts. Then the p-CAPTCHA system is considered secure against attack from $R$ with an associated confidence level $\alpha$ when $\frac{n_f}{n_{SP}} < F(l)$.
+\end{mydef}
 
 \section*{Designing a p-CAPTCHA System}
 
@@ -81,20 +90,11 @@ CAPTCHAs are sometimes broken so it is worthwhile to have ideas of different app
 \label{EncryptionProcess}
 \end{figure}
 
-%\begin{figure}
-%	\includegraphics[scale=.4]{warpedSK.png}
-%	\includegraphics[scale=.4]{warpedfrosty.png}
-%	\includegraphics[scale=.4]{SKBreakLines.jpg}
-%	\includegraphics[scale=.4]{SK75391.png}
-%	\caption{The encryption process: 1. The strong key 2. Adding noise to hide edges 3. Dividing the image into tiles 4. Permuting the tiles according to a short password}
-%\label{EncryptionProcess}
-%\end{figure}
+Noise was added to the image in step two in order to increase the difficulty of finding edges. When a letter is cut into pieces and those pieces are shifted around, the total amount of letter edge length will likely increase. If edges were easily discernible, the plaintext would be recognizable because it would have less total edge length. Decryption simply requires finding the inverse of the permutation corresponding to SP and rearranging the blocks into their original, human-readable form.
 
-	Noise was added to the image in step two in order to increase the difficulty of finding edges. When a letter is cut into pieces and those pieces are shifted around, the total amount of letter edge length will likely increase. If edges were easily discernible, the plaintext would be recognizable because it would have less total edge length. Decryption simply requires finding the inverse of the permutation corresponding to SP and rearranging the blocks into their original, human-readable form.
+The p-CAPTCHA plaintext in Figure~{\ref{EncryptionProcess}} encrypted by permuting 57 blocks. Although there are 57-factorial permutations of 57 blocks, most of these permutations are irrelevant. Each permutation must be tied to a decryption key in order for it to be found by the user. Since we are assuming that the decryption algorithm is known, an attacker will only have to deal with as many candidate images as the decryption algorithm will produce from the small decryption key space.
 
-	The p-CAPTCHA plaintext in Figure~{\ref{EncryptionProcess}} encrypted by permuting 57 blocks. Although there are 57-factorial permutations of 57 blocks, most of these permutations are irrelevant. Each permutation must be tied to a decryption key in order for it to be found by the user. Since we are assuming that the decryption algorithm is known, an attacker will only have to deal with as many candidate images as the decryption algorithm will produce from the small decryption key space.
-
-	Successfully attacking the p-CAPTCHA system presented here requires differentiating the true plaintext from the $n_{sp}$ candidate plaintexts. Three spurious plaintexts along with the true plaintext are shown in Figure~{\ref{RecognitionProblem}.
+Successfully attacking the p-CAPTCHA system presented here requires differentiating the true plaintext from the $n_{sp}$ candidate plaintexts. Three spurious plaintexts along with the true plaintext are shown in Figure~{\ref{RecognitionProblem}.
 
 \begin{figure}
 	\begin{center}
@@ -104,26 +104,19 @@ CAPTCHAs are sometimes broken so it is worthwhile to have ideas of different app
 \label{RecognitionProblem}
 \end{figure}
 
-%\begin{figure}
-%	\includegraphics[scale=.4]{SK75392.png}
-%	\includegraphics[scale=.4]{SK75393.png}
-%	\includegraphics[scale=.4]{warpedfrosty.png}
-%	\includegraphics[scale=.4]{SK75395.png}
-%	\caption{Can your computer recognize the true plaintext?}
-%\label{RecognitionProblem}
-%\end{figure}
-
 Some parameters of this system could be adjusted, such as the size of the letters, the amount of fuzziness (noise) in the background and in the letters, and the size of the tiles that get permuted. By adjusting these parameters, we can better position ourselves in the window of possible images that are too difficult for a human to recognize, but still possible for a human to read without confusing the letters.
 
 Some care should be taken when choosing parameters. We do not want our tiles to be so small that permuting them makes the image look like pure noise, with no semblance of letters. We also do not want our tiles to be so large that a good portion of the letter is contained in each tile. While this would make the scrambled plaintext look a lot like the true plaintext, a human could figure out what letters were being used by looking at a scrambled image. By typing these letters into the computer, the computer could then try a brute force attack with permutations of these letters without needing to solve any OCR problem.
 
 
+\bibliographystyle{plain}
+\bibliography{references}
 
-\begin{thebibliography}
-\bibliography{laptyeva}
+%\begin{thebibliography}
+%\bibliography{laptyeva}
 
-	\bibitem{laptyeva}
-		T. V. Laptyeva, S. Flach, K. Kladko
+%	\bibitem{laptyeva}
+%		T. V. Laptyeva, S. Flach, K. Kladko
 	
 	%author = {T. V. Laptyeva, S. Flach, K. Kladko},
 	%title = {The Weak-password problem: Chaos, criticality, and encrypted p-CAPTCHAs},
@@ -138,9 +131,9 @@ Some care should be taken when choosing parameters. We do not want our tiles to 
 %journal = {EPL},
 %year = {2011},
 %OPTvolume = {95}
-}
+%}
 
 %\bibitem{laptyeva} \Author{She's Ukranian.}
-\end{thebibliography}
+%\end{thebibliography}
 
 \end{document}
